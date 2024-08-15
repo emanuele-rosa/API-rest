@@ -1,9 +1,12 @@
 import { it, beforeAll, afterAll, describe, expect } from "vitest";
+import { exec, execSync } from "node:child_process";
 import request from "supertest";
 import { app } from "../src/app";
+import { beforeEach } from "node:test";
 
 describe("Transactions routes", () => {
   beforeAll(async () => {
+    execSync("npm run knex migrate:latest");
     await app.ready();
   });
 
@@ -11,18 +14,12 @@ describe("Transactions routes", () => {
     await app.close();
   });
 
-  it("should be able to create a new transaction", async () => {
-    await request(app.server)
-      .post("/transactions")
-      .send({
-        title: "Salario",
-        amount: 5000,
-        type: "credit",
-      })
-      .expect(201);
+  beforeEach(async () => {
+    execSync("npm run knex:migrate:rollback --all");
+    execSync("npm run knex:migrate:lastest");
   });
 
-  it("should be able to list all transactions", async () => {
+  it("should be able list all transactions", async () => {
     const createTransactionResponse = await request(app.server)
       .post("/transactions")
       .send({
