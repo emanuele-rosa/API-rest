@@ -5,6 +5,7 @@ process.env.NODE_ENV === "test" ? config({ path: ".env.test" }) : config();
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("production"),
+  DATABASE_CLIENT: z.enum(["pg","sqlite"]),
   DATABASE_URL: z.string(),
   PORT: z.number().default(3333),
 });
